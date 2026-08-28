@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Líderes do API — Dados da Liderança</title>
+<style>
+  :root{
+    --bg: #0b0b12;
+    --bg2: #14141f;
+    --card: #1c1c2e;
+    --text: #ffffff;
+    --muted: #a0a0b8;
+    --gold: #ffd93d;
+    --cyan: #00d4ff;
+    --purple: #8a2be2;
+    --pink: #ff2d95;
+    --orange: #ff8c42;
+    --green: #1db954;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: radial-gradient(1200px 800px at 80% -10%, #2a1a4a 0%, transparent 50%),
+                radial-gradient(1000px 700px at -10% 110%, #3a2a00 0%, transparent 50%),
+                var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ============ TELA DE SELEÇÃO ============ */
+  #home{
+    min-height:100vh;
+    padding:48px 20px 80px;
+    max-width:1100px;
+    margin:0 auto;
+  }
+  .home-head{text-align:center;margin-bottom:40px;}
+  .home-head .logo{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--orange));display:inline-flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 8px 30px rgba(255,141,66,.5);margin-bottom:16px;}
+  .home-head h1{font-size:clamp(28px,5vw,48px);font-weight:900;letter-spacing:-1px;
+    background:linear-gradient(90deg,var(--gold),var(--orange),var(--pink),var(--purple));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .home-head p{color:var(--muted);margin-top:10px;font-size:18px;}
+  .home-head .total-badge{display:inline-block;margin-top:18px;background:rgba(255,217,61,.12);border:1px solid rgba(255,217,61,.4);color:var(--gold);padding:8px 18px;border-radius:100px;font-weight:700;font-size:15px;}
+
+  .search-box{max-width:480px;margin:0 auto 32px;position:relative;}
+  .search-box input{width:100%;padding:14px 20px;border-radius:100px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;font-size:16px;outline:none;transition:.2s;}
+  .search-box input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,217,61,.2);}
+  .search-box input::placeholder{color:#6a6a85;}
+
+  .grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;
+  }
+  .mediador-card{
+    background:linear-gradient(160deg,var(--card),#14141f);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:18px;padding:18px;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s;
+    position:relative;overflow:hidden;text-align:left;color:#fff;font-family:inherit;
+  }
+  .mediador-card::before{
+    content:'';position:absolute;inset:0;background:radial-gradient(200px 120px at 90% -20%, rgba(255,255,255,.08), transparent);pointer-events:none;
+  }
+  .mediador-card:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 14px 40px rgba(0,0,0,.5);border-color:var(--gold);}
+  .mediador-card .avatar{
+    width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:900;font-size:18px;color:#fff;margin-bottom:12px;flex-shrink:0;
+  }
+  .mediador-card .nome{font-weight:800;font-size:15px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .mediador-card .meta{color:var(--muted);font-size:13px;margin-top:8px;display:flex;gap:10px;flex-wrap:wrap;}
+  .mediador-card .meta span{background:rgba(255,255,255,.07);padding:3px 9px;border-radius:100px;}
+
+  .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px;}
+
+  /* ============ TELA DA APRESENTAÇÃO ============ */
+  #wrap{
+    position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;
+    background: radial-gradient(1200px 800px at 80% -10%, #2a1a4a 0%, transparent 50%),
+                radial-gradient(1000px 700px at -10% 110%, #3a2a00 0%, transparent 50%),
+                var(--bg);
+  }
+  #wrap.active{display:flex;animation:fadeIn .4s ease;}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+  .progress-top{position:absolute;top:0;left:0;right:0;height:4px;background:rgba(255,255,255,.08);z-index:20;}
+  .progress-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--orange),var(--pink),var(--purple));width:0%;transition:width .5s ease;}
+
+  .topbar{position:absolute;top:14px;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 24px;z-index:20;}
+  .btn-back{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;padding:8px 16px;border-radius:100px;cursor:pointer;font-size:14px;font-weight:600;transition:.2s;font-family:inherit;}
+  .btn-back:hover{background:rgba(255,255,255,.16);}
+  .who{color:var(--muted);font-size:13px;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .who b{color:#fff;}
+
+  .stage{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:70px 24px 90px;}
+  .slides{position:relative;width:100%;max-width:860px;height:100%;max-height:640px;}
+  .slide{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;opacity:0;pointer-events:none;transform:translateX(60px) scale(.96);
+    transition:opacity .5s ease, transform .5s ease;padding:20px;
+  }
+  .slide.active{opacity:1;pointer-events:auto;transform:translateX(0) scale(1);}
+
+  .slide .kicker{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:14px;}
+  .slide h2{font-size:clamp(30px,5.5vw,52px);font-weight:900;line-height:1.08;letter-spacing:-1px;}
+  .slide .big-num{
+    font-size:clamp(90px,18vw,180px);font-weight:900;line-height:1;
+    background:linear-gradient(135deg,var(--gold),var(--orange));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 10px 30px rgba(255,141,66,.35));
+  }
+  .slide .sub{color:var(--muted);font-size:18px;margin-top:14px;max-width:620px;line-height:1.5;}
+  .slide .accent{color:var(--pink);}
+
+  .grad-text{
+    background:linear-gradient(90deg,var(--orange),var(--pink),var(--purple));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .grad-gold{background:linear-gradient(90deg,var(--gold),var(--orange));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+
+  /* Anos pills */
+  .anos-pills{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:26px;}
+  .ano-pill{background:var(--card);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:18px 26px;min-width:120px;transition:.25s;}
+  .ano-pill .a{font-size:15px;color:var(--muted);font-weight:700;}
+  .ano-pill .n{font-size:44px;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+
+  /* Stat tiles */
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;width:100%;max-width:700px;margin-top:24px;}
+  .tile{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px 14px;}
+  .tile .n{font-size:30px;font-weight:900;}
+  .tile .l{font-size:12px;color:var(--muted);font-weight:700;margin-top:6px;text-transform:uppercase;letter-spacing:1px;}
+
+  /* Escolas */
+  .escolas-wrap{width:100%;max-width:640px;margin-top:22px;}
+  .escola-row{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+  .escola-row .rk{font-weight:900;color:var(--muted);}
+  .escola-row .nm{text-align:left;font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .escola-row .cnt{font-weight:900;color:var(--gold);}
+
+  /* Equipe (mediadores) */
+  .equipe-wrap{width:100%;max-width:640px;margin-top:22px;}
+  .equipe-row{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+  .equipe-row .rk{font-weight:900;color:var(--muted);}
+  .equipe-row .nm{text-align:left;font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .equipe-row .cnt{font-weight:900;color:var(--green);}
+
+  .nav-btns{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 24px 26px;z-index:20;}
+  .btn-nav{background:linear-gradient(135deg,var(--gold),#d89c00);border:none;color:#111;padding:14px 28px;border-radius:100px;font-size:15px;font-weight:800;cursor:pointer;transition:transform .15s, box-shadow .15s;font-family:inherit;letter-spacing:.5px;}
+  .btn-nav:hover{transform:scale(1.05);box-shadow:0 8px 30px rgba(255,217,61,.4);}
+  .btn-nav.prev{background:rgba(255,255,255,.08);color:#fff;box-shadow:none;border:1px solid rgba(255,255,255,.12);}
+  .btn-nav.prev:hover{background:rgba(255,255,255,.15);box-shadow:none;}
+  .counter{color:var(--muted);font-size:14px;font-weight:700;}
+
+  .final-emoji{font-size:90px;margin-bottom:10px;animation:bounce 1.6s infinite;}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+
+  .confetti{position:fixed;top:-10px;width:10px;height:10px;z-index:50;pointer-events:none;}
+
+  @media(max-width:560px){
+    .topbar{padding:0 14px;}
+    .nav-btns{padding:0 14px 18px;}
+    .btn-nav{padding:12px 20px;font-size:14px;}
+    .slides{max-height:520px;}
+    .slide h2{font-size:30px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TELA 1: SELEÇÃO ============ -->
+<div id="home">
+  <div class="home-head">
+    <div class="logo">👑</div>
+    <h1>Líderes do API</h1>
+    <p>Os números da liderança: equipes acompanhadas, orientações dadas e escolas atendidas.</p>
+    <div class="total-badge" id="totalBadge"></div>
+  </div>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Buscar pelo nome do líder...">
+  </div>
+  <div class="grid" id="liderGrid"></div>
+</div>
+
+<!-- ============ TELA 2: APRESENTAÇÃO ============ -->
+<div id="wrap">
+  <div class="progress-top"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="topbar">
+    <button class="btn-back" id="btnBack">← Ver todos</button>
+    <div class="who" id="whoAmI"></div>
+  </div>
+
+  <div class="stage">
+    <div class="slides" id="slides"></div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-nav prev" id="btnPrev">← Anterior</button>
+    <div class="counter" id="counter">1 / 10</div>
+    <button class="btn-nav" id="btnNext">Próximo →</button>
+  </div>
+</div>
+
+<script>
+/* ================= DADOS ================= */
+const DADOS = {"geradoEm": "2026-08-28", "totalSessoes": 11309, "totalOrientacoes": 7229, "totalLideres": 18, "lideres": [{"nome": "CÂNDIDA APARECIDA ALVES DA CUNHA", "primeiroNome": "Cândida", "total": 995, "totalPorAno": {"2025": 622, "2026": 373}, "nEscolas": 58, "topEscolas": [{"nome": "EE INDÍGENA GUILHERMINA DA SILVA", "total": 25}, {"nome": "EE ROMALINO ALVES DE ALBRES", "total": 25}, {"nome": "EE CEL. JOSÉ ALVES RIBEIRO", "total": 25}, {"nome": "EE INDÍGENA DE EM PASTOR REGINALDO MIGUEL - HOYENÓ O", "total": 25}, {"nome": "EE CARMELITA CANALE REBUÁ", "total": 25}, {"nome": "EE INDÍGENA DE EM PROF. DOMINGOS V. MARCOS - MIHIN", "total": 25}], "nEquipe": 6, "topMediadores": [{"nome": "CARLOS EDUARDO HENRIQUE DA CRUZ", "total": 261}, {"nome": "JULIANA SOUZA SOARES", "total": 251}, {"nome": "MARIA DE ALMEIDA GERÔNIMO", "total": 237}, {"nome": "GEISELLY MARÇAL DA SILVA LEÃO", "total": 151}, {"nome": "THIAGO BARBOSA DE BRITO", "total": 86}, {"nome": "BRENO ACUNHA FAUSTINO", "total": 9}], "totalOrientacoes": 768, "slug": "candida-aparecida-alves-da-cunha"}, {"nome": "ÁTILA DIAS CAMARGO", "primeiroNome": "Átila", "total": 990, "totalPorAno": {"2025": 655, "2026": 335}, "nEscolas": 74, "topEscolas": [{"nome": "EE PROFª. NEYDER SUELLY COSTA VIEIRA", "total": 26}, {"nome": "EE ARLINDO DE ANDRADE GOMES", "total": 25}, {"nome": "EE PADRE JOSÉ SCAMPINI", "total": 25}, {"nome": "EE JOSÉ ANTÔNIO PEREIRA", "total": 25}, {"nome": "EE 11 DE OUTUBRO", "total": 24}, {"nome": "EE PROF. SILVIO OLIVEIRA DOS SANTOS", "total": 24}], "nEquipe": 4, "topMediadores": [{"nome": "DANILO DOMINGUES NASARIO", "total": 278}, {"nome": "CAMILA ALVES DA SILVA ROCHA.", "total": 265}, {"nome": "LÚCIA LEITE FERREIRA", "total": 242}, {"nome": "PÂMELLA ALVES DE MELLO", "total": 205}], "totalOrientacoes": 556, "slug": "atila-dias-camargo"}, {"nome": "LEANDRO RAMIRES DUARTE", "primeiroNome": "Leandro", "total": 979, "totalPorAno": {"2025": 671, "2026": 308}, "nEscolas": 70, "topEscolas": [{"nome": "EE JOSÉ MAMEDE DE AQUINO", "total": 27}, {"nome": "EE PROFª. ADA TEIXEIRA DOS SANTOS PEREIRA", "total": 26}, {"nome": "EE SEBASTIÃO SANTANA DE OLIVEIRA", "total": 26}, {"nome": "EE JOAQUIM MURTINHO", "total": 26}, {"nome": "EE PROFª. DELMIRA RAMOS DOS SANTOS", "total": 25}, {"nome": "EE LUISA VIDAL BORGES DANIEL", "total": 24}], "nEquipe": 4, "topMediadores": [{"nome": "DIONATAN SOARES CARDOSO", "total": 280}, {"nome": "LAISE CRISTINA SOUZA MAGALHÃES", "total": 271}, {"nome": "POLYANA CARVALHO DA CUNHA", "total": 260}, {"nome": "WILLIAN RIBEIRO ZUCARELI", "total": 168}], "totalOrientacoes": 586, "slug": "leandro-ramires-duarte"}, {"nome": "MAGNUM TIBURSO FARIA", "primeiroNome": "Magnum", "total": 870, "totalPorAno": {"2025": 537, "2026": 333}, "nEscolas": 52, "topEscolas": [{"nome": "EE. DR. JOSÉ MANOEL FONTANILLAS FRAGELLI", "total": 25}, {"nome": "EE BRAZ SINIGAGLIA", "total": 24}, {"nome": "EE MARIA JOSÉ", "total": 24}, {"nome": "EE LUIS VAZ DE CAMÕES", "total": 24}, {"nome": "EE DORCELINA DE OLIVEIRA FOLADOR", "total": 24}, {"nome": "EE DR. MARTINHO MARQUES", "total": 23}], "nEquipe": 5, "topMediadores": [{"nome": "FABIANA OLIVEIRA GARCIA", "total": 248}, {"nome": "SABRINA MONITCHELE HANZEN", "total": 211}, {"nome": "ELIS REGINA PEREIRA DIAS", "total": 208}, {"nome": "SILVANA CORRÊA DE SOUZA MENDONÇA", "total": 136}, {"nome": "FERNANDA NUNES DE ARAUJO PEREIRA", "total": 67}], "totalOrientacoes": 568, "slug": "magnum-tiburso-faria"}, {"nome": "PAMELA SOUZA DE PIETRO", "primeiroNome": "Pamela", "total": 860, "totalPorAno": {"2025": 508, "2026": 352}, "nEscolas": 75, "topEscolas": [{"nome": "EE PRES. VARGAS", "total": 23}, {"nome": "EE JOÃO BAPTISTA PEREIRA", "total": 21}, {"nome": "EE TEN. AVIADOR ANTÔNIO JOÃO", "total": 21}, {"nome": "EE BARÃO DO RIO BRANCO", "total": 21}, {"nome": "EE MIN. JOÃO PAULO DOS REIS VELOSO", "total": 20}, {"nome": "EE PRES. TANCREDO NEVES", "total": 20}], "nEquipe": 5, "topMediadores": [{"nome": "LIZ GRACIELA SANABRIA RIVAROLA", "total": 258}, {"nome": "LIDIANNE FINAMOR COUTO", "total": 237}, {"nome": "NATALIA BARBOSA SANTANA", "total": 185}, {"nome": "FERNANDA RIBAS DA LUZ BARRETO", "total": 97}, {"nome": "CAROLINE PINHEIRO DA SILVA", "total": 83}], "totalOrientacoes": 532, "slug": "pamela-souza-de-pietro"}, {"nome": "LESILY CHIAVELLI SPLICIDO", "primeiroNome": "Lesily", "total": 837, "totalPorAno": {"2025": 526, "2026": 311}, "nEscolas": 50, "topEscolas": [{"nome": "EE MANOEL GUILHERME DOS SANTOS", "total": 26}, {"nome": "EE ELDORADO", "total": 26}, {"nome": "EE 13 DE MAIO", "total": 26}, {"nome": "EE GUIMARÃES ROSA", "total": 25}, {"nome": "EE JURACY ALVES CARDOSO", "total": 25}, {"nome": "EE ANTÔNIO FERNANDES", "total": 25}], "nEquipe": 3, "topMediadores": [{"nome": "ROSIMARI BALDO", "total": 305}, {"nome": "CARLEYMARA VOLK SAUCEDO", "total": 266}, {"nome": "JACKELINE RODRIGUES CERRI NABARRO", "total": 266}], "totalOrientacoes": 455, "slug": "lesily-chiavelli-splicido"}, {"nome": "CAROLINE TOLENTINO DE SOUZA", "primeiroNome": "Caroline", "total": 835, "totalPorAno": {"2025": 499, "2026": 336}, "nEscolas": 52, "topEscolas": [{"nome": "EE JOAQUIM MURTINHO", "total": 26}, {"nome": "EE JOÃO BREMBATTI CALVOSO", "total": 25}, {"nome": "EE INDÍGENA MBO EROY GUARANI KAIOWÁ", "total": 24}, {"nome": "EE CEL. SAPUCAIA", "total": 24}, {"nome": "EE PROF. JOSÉ EDSON DOMINGOS DOS SANTOS", "total": 24}, {"nome": "EE NOVA ITAMARATI", "total": 24}], "nEquipe": 4, "topMediadores": [{"nome": "CESAR CARLOS GALENO ALFONZO", "total": 273}, {"nome": "JANE CRISTINA DA SILVA", "total": 273}, {"nome": "MONALISA MARA MENINELLI MOLINA", "total": 184}, {"nome": "JOHNATHAN CABRERA MIGUEL", "total": 105}], "totalOrientacoes": 673, "slug": "caroline-tolentino-de-souza"}, {"nome": "ANTONIO NETO DIONISIO", "primeiroNome": "Antonio", "total": 826, "totalPorAno": {"2025": 564, "2026": 262}, "nEscolas": 76, "topEscolas": [{"nome": "EE CASTRO ALVES", "total": 23}, {"nome": "EE CAMBARAI", "total": 22}, {"nome": "EE ETALÍVIO PEREIRA MARTINS", "total": 22}, {"nome": "EE ANTÔNIO VICENTE AZAMBUJA", "total": 22}, {"nome": "EE RITA ANGELINA BARBOSA SILVEIRA", "total": 21}, {"nome": "EE PADRE JOSÉ DANIEL", "total": 21}], "nEquipe": 6, "topMediadores": [{"nome": "THIAGO BATISTA BISCAYA DE SOUZA", "total": 291}, {"nome": "NÁDIA VERÔNICA GYORFI DOS SANTOS", "total": 224}, {"nome": "MARLI DE SOUZA ALMEIDA OLIVEIRA", "total": 128}, {"nome": "CRISTIANE ALMIRON BATISTA DE FREITAS", "total": 98}, {"nome": "PRISCILA GONÇALVES LEAL FERNANDES", "total": 82}, {"nome": "VANONY DAHIR CAMARGO FERREIRA", "total": 3}], "totalOrientacoes": 370, "slug": "antonio-neto-dionisio"}, {"nome": "TANIEL FERREIRA DA CRUZ", "primeiroNome": "Taniel", "total": 691, "totalPorAno": {"2025": 437, "2026": 254}, "nEscolas": 40, "topEscolas": [{"nome": "EE VIRIATO BANDEIRA", "total": 25}, {"nome": "EE JOSÉ FERREIRA DA COSTA", "total": 24}, {"nome": "EE DORCELINA FOLADOR", "total": 24}, {"nome": "EE PROFª. CLARICE RONDON DOS SANTOS", "total": 24}, {"nome": "EE PROFª. ROMILDA COSTA CARNEIRO", "total": 24}, {"nome": "EE THOMAZ BARBOSA RANGEL", "total": 24}], "nEquipe": 4, "topMediadores": [{"nome": "GLEICY ANNE ALVES PEREIRA CABOCLO", "total": 261}, {"nome": "ANA RÚBIA FERREIRA DE SOUZA", "total": 218}, {"nome": "GLEYSSON EMANUEL DE SOUZA FREITAS", "total": 145}, {"nome": "JORGIANA RAFAELLA", "total": 67}], "totalOrientacoes": 431, "slug": "taniel-ferreira-da-cruz"}, {"nome": "FERNANDA COSTA DE FARIA NERES", "primeiroNome": "Fernanda", "total": 651, "totalPorAno": {"2025": 417, "2026": 234}, "nEscolas": 36, "topEscolas": [{"nome": "EE JOÃO DANTAS FILGUEIRAS", "total": 27}, {"nome": "EE EDWARDS CORRÊA E SOUZA", "total": 26}, {"nome": "EE DOM AQUINO CORRÊA", "total": 26}, {"nome": "EE AFONSO PENA", "total": 26}, {"nome": "EE JOSÉ FERREIRA", "total": 26}, {"nome": "EE MAL. CASTELO BRANCO", "total": 25}], "nEquipe": 2, "topMediadores": [{"nome": "KATHIUSY GOMES DA SILVA", "total": 326}, {"nome": "WESLEY DA SILVA MEIRA", "total": 325}], "totalOrientacoes": 514, "slug": "fernanda-costa-de-faria-neres"}, {"nome": "CRISTIANE MAIDANA AGUILERA", "primeiroNome": "Cristiane", "total": 621, "totalPorAno": {"2025": 384, "2026": 237}, "nEscolas": 38, "topEscolas": [{"nome": "EE PROFª. VERA GUIMARÃES LOUREIRO", "total": 24}, {"nome": "EE CASTELO BRANCO", "total": 24}, {"nome": "EE ESTER SILVA", "total": 23}, {"nome": "EE DR. JOAQUIM MURTINHO", "total": 23}, {"nome": "EE ALZIRO LOPES", "total": 23}, {"nome": "EE SALOMÉ DE MELO ROCHA", "total": 23}], "nEquipe": 3, "topMediadores": [{"nome": "DANIELE LOPES ACOSTA", "total": 208}, {"nome": "ELOINA DA SILVA SANTOS", "total": 207}, {"nome": "ALEXANDRE RIBEIRO LOUREIRO", "total": 206}], "totalOrientacoes": 371, "slug": "cristiane-maidana-aguilera"}, {"nome": "EUZENIR FRANCISCA DA SILVA", "primeiroNome": "Euzenir", "total": 535, "totalPorAno": {"2025": 339, "2026": 196}, "nEscolas": 34, "topEscolas": [{"nome": "EE SÃO JOSÉ", "total": 24}, {"nome": "EE GEORGINA DE OLIVEIRA ROCHA", "total": 23}, {"nome": "EE WLADISLAU GARCIA GOMES", "total": 22}, {"nome": "EE DR. ERMÍRIO LEAL GARCIA", "total": 22}, {"nome": "EE RUI BARBOSA", "total": 22}, {"nome": "EE AUGUSTO KRUG NETTO", "total": 22}], "nEquipe": 2, "topMediadores": [{"nome": "LÉA DIVINA APARECIDA FAGUNDES", "total": 277}, {"nome": "TAÍS DE MEDEIROS PEDREIRA", "total": 258}], "totalOrientacoes": 331, "slug": "euzenir-francisca-da-silva"}, {"nome": "ELIZABETH DE LIMA PINTO", "primeiroNome": "Elizabeth", "total": 489, "totalPorAno": {"2025": 316, "2026": 173}, "nEscolas": 27, "topEscolas": [{"nome": "EE MARIA LEITE", "total": 26}, {"nome": "EE NATHÉRCIA POMPEO DOS SANTOS", "total": 26}, {"nome": "EE CARLOS DE CASTRO BRASIL", "total": 26}, {"nome": "EE MARIA HELENA ALBANEZE", "total": 26}, {"nome": "EE LEME DO PRADO", "total": 26}, {"nome": "EE DR. JOÃO LEITE DE BARROS", "total": 25}], "nEquipe": 3, "topMediadores": [{"nome": "LAURA APARECIDA CANAVARROS DE ABREU", "total": 238}, {"nome": "ANDRÉA LUIZA DA COSTA OLIVEIRA", "total": 168}, {"nome": "ROSELI CRISTINA BATISTA AREVALO", "total": 83}], "totalOrientacoes": 375, "slug": "elizabeth-de-lima-pinto"}, {"nome": "ANA MARIA JOVELINA RAMIRES DE LIMA", "primeiroNome": "Ana", "total": 385, "totalPorAno": {"2025": 109, "2026": 276}, "nEscolas": 24, "topEscolas": [{"nome": "EE ZUMBI DOS PALMARES", "total": 24}, {"nome": "EE ANTÔNIO VALADARES", "total": 24}, {"nome": "EE DELFINA NOGUEIRA DE SOUZA", "total": 23}, {"nome": "EE ERNESTO SOLON BORGES", "total": 23}, {"nome": "EE JOSÉ ALVES RIBEIRO", "total": 23}, {"nome": "EE SIDRÔNIO ANTUNES DE ANDRADE", "total": 23}], "nEquipe": 3, "topMediadores": [{"nome": "REJANE FÁTIMA STEINHAUS", "total": 226}, {"nome": "ANDERSON DA COSTA PIRES", "total": 104}, {"nome": "FERNANDO ANTONIO VELASCO", "total": 55}], "totalOrientacoes": 376, "slug": "ana-maria-jovelina-ramires-de-lima"}, {"nome": "FÁBIO DE SOUZA PAES", "primeiroNome": "Fábio", "total": 336, "totalPorAno": {"2025": 326, "2026": 10}, "nEscolas": 33, "topEscolas": [{"nome": "EE PAULO EDUARDO DE SOUZA FIRMO", "total": 12}, {"nome": "EE MIGUEL SUTIL", "total": 12}, {"nome": "EE PROFª. CATARINA DE ABREU", "total": 11}, {"nome": "50004700_N", "total": 11}, {"nome": "50010026_N", "total": 11}, {"nome": "EE JOSÉ ALVES QUITO", "total": 11}], "nEquipe": 2, "topMediadores": [{"nome": "PAULA LOURDES DA SILVA", "total": 229}, {"nome": "MEDIADOR APPI2 SEM NOME", "total": 107}], "totalOrientacoes": 131, "slug": "fabio-de-souza-paes"}, {"nome": "PÂMELLA ALVES DE MELLO", "primeiroNome": "Pâmella", "total": 254, "totalPorAno": {"2026": 254}, "nEscolas": 27, "topEscolas": [{"nome": "EE JOSÉ BARBOSA RODRIGUES", "total": 13}, {"nome": "EE GAL. MALAN", "total": 13}, {"nome": "EE BLANCHE DOS SANTOS PEREIRA", "total": 13}, {"nome": "EE 26 DE AGOSTO", "total": 12}, {"nome": "EE MAESTRO FREDERICO LIEBERMANN", "total": 12}, {"nome": "ESCOLA ESTADUAL VEREADOR CRISTÓVÃO SILVEIRA", "total": 12}], "nEquipe": 3, "topMediadores": [{"nome": "ANSELMO DE SOUZA FILGUEIRA", "total": 93}, {"nome": "GABRIELLY ROCHA GOMES", "total": 93}, {"nome": "KYLIAN DUARTE", "total": 68}], "totalOrientacoes": 109, "slug": "pamella-alves-de-mello"}, {"nome": "LIDIANNE FINAMOR COUTO", "primeiroNome": "Lidianne", "total": 144, "totalPorAno": {"2026": 144}, "nEscolas": 19, "topEscolas": [{"nome": "EE INDÍGENA INTERCULTURAL GUATEKA - MARÇAL DE SOUZA", "total": 13}, {"nome": "EE PRINCESA IZABEL", "total": 12}, {"nome": "EE ANTÔNIO JOÃO RIBEIRO", "total": 11}, {"nome": "EE RODRIGUES ALVES", "total": 11}, {"nome": "EE SEN. SALDANHA DERZI", "total": 11}, {"nome": "EE EDSON BEZERRA", "total": 11}], "nEquipe": 2, "topMediadores": [{"nome": "PAULA ANDRÉIA BETÔNI CORRÊA", "total": 84}, {"nome": "ALINE FUSGHEIRA PEREIRA", "total": 60}], "totalOrientacoes": 47, "slug": "lidianne-finamor-couto"}, {"nome": "JACKELINE RODRIGUES CERRI NABARRO", "primeiroNome": "Jackeline", "total": 11, "totalPorAno": {"2026": 11}, "nEscolas": 8, "topEscolas": [{"nome": "EE 8 DE MAIO", "total": 2}, {"nome": "EE PROF. JOSÉ JUAREZ RIBEIRO DE OLIVEIRA", "total": 2}, {"nome": "EE JAPORÃ", "total": 2}, {"nome": "EE SILO VARGAS BATISTA", "total": 1}, {"nome": "EE 31 DE MARÇO", "total": 1}, {"nome": "EE MAL. RONDON", "total": 1}], "nEquipe": 1, "topMediadores": [{"nome": "PERLA ALVES", "total": 11}], "totalOrientacoes": 36, "slug": "jackeline-rodrigues-cerri-nabarro"}]};
+
+/* ================= UTILIDADES ================= */
+const COLORS = ['#ffd93d','#ff8c42','#ff2d95','#8a2be2','#00d4ff','#1db954','#7c4dff','#3dc2a0'];
+function colorFor(i){ return COLORS[i % COLORS.length]; }
+const $ = s => document.querySelector(s);
+
+/* ================= TELA 1: CARDS ================= */
+const grid = $('#liderGrid');
+const totalBadge = $('#totalBadge');
+totalBadge.textContent = `${DADOS.totalSessoes.toLocaleString('pt-BR')} sessões acompanhadas · ${DADOS.totalOrientacoes.toLocaleString('pt-BR')} orientações · ${DADOS.totalLideres} líderes`;
+
+function renderCards(lista){
+  grid.innerHTML = '';
+  if(!lista.length){ grid.innerHTML = '<div class="empty">Nenhum líder encontrado 😕</div>'; return; }
+  lista.forEach((m,i)=>{
+    const card = document.createElement('button');
+    card.className = 'mediador-card';
+    card.style.borderLeft = `4px solid ${colorFor(i)}`;
+    const iniciais = m.nome.split(' ').filter(Boolean).map(p=>p[0]).slice(0,2).join('');
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="avatar" style="background:linear-gradient(135deg,${colorFor(i)},${colorFor(i+2)})">${iniciais}</div>
+        <div class="nome">${m.nome}</div>
+      </div>
+      <div class="meta">
+        <span>📋 ${m.total} sessões</span>
+        <span>💬 ${m.totalOrientacoes} orientações</span>
+        <span>🏫 ${m.nEscolas} escolas</span>
+        <span>👥 ${m.nEquipe} mediadores</span>
+      </div>`;
+    card.addEventListener('click', ()=> openLider(m));
+    grid.appendChild(card);
+  });
+}
+renderCards(DADOS.lideres);
+
+$('#searchInput').addEventListener('input', e=>{
+  const q = e.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const filt = DADOS.lideres.filter(m=>{
+    const n = m.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    return n.includes(q);
+  });
+  renderCards(filt);
+});
+
+/* ================= TELA 2: APRESENTAÇÃO ================= */
+const wrap = $('#wrap');
+const slidesEl = $('#slides');
+let current = 0;
+let slides = [];
+let currentLider = null;
+
+function buildSlides(m){
+  const S = [];
+  const anos = Object.keys(m.totalPorAno).sort();
+
+  // Slide 0 — Intro
+  S.push(`
+    <div class="kicker">Sua liderança</div>
+    <div style="font-size:70px;margin-bottom:10px">👑</div>
+    <h2>Oi, <span class="grad-text">${m.primeiroNome}</span>!</h2>
+    <p class="sub">Você lidera uma equipe de <b class="accent">${m.nEquipe}</b> mediadores. Vamos ver o impacto dessa jornada.</p>
+  `);
+
+  // Slide 1 — Sessões acompanhadas
+  S.push(`
+    <div class="kicker">Sessões acompanhadas</div>
+    <div class="big-num">${m.total}</div>
+    <p class="sub">Foram <b class="accent">${m.total.toLocaleString('pt-BR')}</b> acompanhamentos pedagógicos concluídos pela sua equipe${anos.length>1?` em ${anos.length} anos`:''}.</p>
+  `);
+
+  // Slide 2 — Por ano
+  if(anos.length>0){
+    const pills = anos.map((a,i)=>`
+      <div class="ano-pill" style="border-top:4px solid ${colorFor(i)}">
+        <div class="a">${a}</div>
+        <div class="n">${m.totalPorAno[a]}</div>
+      </div>`).join('');
+    S.push(`
+      <div class="kicker">Ano a ano</div>
+      <h2>O ritmo da <span class="grad-gold">equipe</span></h2>
+      <p class="sub">${anos.map((a,i)=>`em <b>${a}</b> foram <b class="accent">${m.totalPorAno[a]}</b> sessões`).join(' · ')}</p>
+      <div class="anos-pills">${pills}</div>
+    `);
+  }
+
+  // Slide 3 — Orientações / feedback
+  S.push(`
+    <div class="kicker">Orientações do Líder</div>
+    <h2>${m.totalOrientacoes.toLocaleString('pt-BR')} <span class="grad-gold">orientações</span></h2>
+    <div class="big-num" style="font-size:clamp(70px,14vw,150px);background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;background-clip:text;">${m.totalOrientacoes}</div>
+    <p class="sub">Feedbacks e orientações registrados para a sua equipe de mediadores, direcionando o trabalho pedagógico.</p>
+  `);
+
+  // Slide 4 — Equipe (mediadores)
+  S.push(`
+    <div class="kicker">Sua equipe</div>
+    <h2>${m.nEquipe} <span class="grad-text">mediadores</span></h2>
+    <p class="sub">Os mediadores que mais realizaram sessões sob a sua liderança.</p>
+    <div class="equipe-wrap">
+      ${m.topMediadores.map((e,i)=>`
+        <div class="equipe-row">
+          <div class="rk">#${i+1}</div>
+          <div class="nm">${e.nome}</div>
+          <div class="cnt">${e.total}${e.total===1?' sessão':' sessões'}</div>
+        </div>`).join('')}
+      ${m.nEquipe>m.topMediadores.length?`<div class="equipe-row"><div class="rk">+</div><div class="nm">E mais ${m.nEquipe-m.topMediadores.length} mediadores...</div><div class="cnt"></div></div>`:''}
+    </div>
+  `);
+
+  // Slide 5 — Escolas
+  S.push(`
+    <div class="kicker">Comunidade atendida</div>
+    <h2>${m.nEscolas} <span class="grad-gold">escolas</span></h2>
+    <p class="sub">${m.nEscolas===1?'Esta escola acompanhou a jornada da sua equipe':`Essas foram as escolas que mais fizeram parte da caminhada da sua equipe`}.</p>
+    <div class="escolas-wrap">
+      ${m.topEscolas.map((e,i)=>`
+        <div class="escola-row">
+          <div class="rk">#${i+1}</div>
+          <div class="nm">${e.nome}</div>
+          <div class="cnt">${e.total}${e.total===1?' sessão':' sessões'}</div>
+        </div>`).join('')}
+      ${m.nEscolas>m.topEscolas.length?`<div class="escola-row"><div class="rk">+</div><div class="nm">E mais ${m.nEscolas-m.topEscolas.length} escolas...</div><div class="cnt"></div></div>`:''}
+    </div>
+  `);
+
+  // Slide 6 — Final
+  S.push(`
+    <div class="final-emoji">🎉</div>
+    <div class="kicker">Fim da apresentação</div>
+    <h2>Continue <span class="grad-text">liderando</span> com excelência!</h2>
+    <p class="sub">${m.primeiroNome}, sua equipe realizou <b class="accent">${m.total.toLocaleString('pt-BR')}</b> sessões em <b>${m.nEscolas}</b> escolas, com <b>${m.totalOrientacoes.toLocaleString('pt-BR')}</b> orientações dadas. Cada direcionamento fez a diferença.</p>
+  `);
+
+  return S;
+}
+
+function openLider(m){
+  currentLider = m;
+  current = 0;
+  slides = buildSlides(m);
+  slidesEl.innerHTML = slides.map((s,i)=>`<div class="slide" data-i="${i}">${s}</div>`).join('');
+  $('#whoAmI').innerHTML = `Líder: <b>${m.nome}</b>`;
+  wrap.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  showSlide(0);
+}
+
+function showSlide(i){
+  document.querySelectorAll('.slide').forEach((s,k)=>{
+    s.classList.toggle('active', k===i);
+  });
+  current = i;
+  $('#counter').textContent = `${i+1} / ${slides.length}`;
+  $('#progressBar').style.width = `${(i+1)/slides.length*100}%`;
+  $('#btnPrev').style.visibility = i===0 ? 'hidden':'visible';
+  $('#btnNext').textContent = i===slides.length-1 ? '🎉 Finalizar' : 'Próximo →';
+  $('#btnNext').style.background = i===slides.length-1 ? 'linear-gradient(135deg,var(--pink),var(--purple))' : '';
+  if(i===slides.length-1){ confettiBurst(); }
+}
+
+function next(){ if(current<slides.length-1){ showSlide(current+1); } else { closeLider(); } }
+function prev(){ if(current>0){ showSlide(current-1); } }
+
+$('#btnNext').addEventListener('click', next);
+$('#btnPrev').addEventListener('click', prev);
+$('#btnBack').addEventListener('click', closeLider);
+
+function closeLider(){
+  wrap.classList.remove('active');
+  document.body.style.overflow = '';
+  renderCards(DADOS.lideres);
+}
+
+document.addEventListener('keydown', e=>{
+  if(!wrap.classList.contains('active')) return;
+  if(e.key==='ArrowRight') next();
+  if(e.key==='ArrowLeft') prev();
+  if(e.key==='Escape') closeLider();
+});
+
+/* ================= DEEP LINK (abrir direto pelo QR) ================= */
+function slugNome(nome){
+  return nome.normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+            .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+}
+function findLiderBySlug(slug){
+  return DADOS.lideres.find(m => slugNome(m.nome) === slug) || null;
+}
+function handleDeepLink(){
+  const params = new URLSearchParams(location.search);
+  const slug = params.get('l');
+  if(!slug) return;
+  const lider = findLiderBySlug(slug);
+  if(lider) openLider(lider);
+}
+
+/* ================= CONFETI ================= */
+function confettiBurst(){
+  const cores = ['#ffd93d','#ff8c42','#ff2d95','#00d4ff','#8a2be2','#1db954','#ffffff'];
+  for(let i=0;i<80;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    el.style.left = Math.random()*100 + 'vw';
+    el.style.background = cores[Math.floor(Math.random()*cores.length)];
+    el.style.width = (Math.random()*8+5)+'px';
+    el.style.height = (Math.random()*8+5)+'px';
+    el.style.borderRadius = Math.random()>0.5?'50%':'2px';
+    el.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(el);
+    const fall = () => {
+      el.style.transform = `translateY(${window.innerHeight+20}px) rotate(${Math.random()*720}deg)`;
+      el.style.transition = `transform ${Math.random()*2.5+2}s cubic-bezier(.3,.6,.4,1)`;
+    };
+    requestAnimationFrame(fall);
+    setTimeout(()=>el.remove(), 5000);
+  }
+}
+
+// deep link: se veio de um QR (?l=<slug>), abre direto a apresentação
+if(location.search.includes('l=')) handleDeepLink();
+</script>
+</body>
+</html>
